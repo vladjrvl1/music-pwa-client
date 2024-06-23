@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import Player from './components/Player/Player';
+import {useEffect, useRef, useState} from 'react';
+import songsData from './components/Player/audios.js';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [songs, setSongs] = useState(songsData);
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentSong, setCurrentSong] = useState(songsData[1]);
+  const audioElem = useRef();
+
+  function mute() {
+    setMuted(true);
+  }
+
+  function unMute() {
+    setMuted(false);
+  }
+
+  useEffect(() => {
+    if (isPlaying) {
+      audioElem.current.play();
+    } else {
+      audioElem.current.pause();
+    }
+    audioElem.current.volume = volume;
+    audioElem.current.muted = muted;
+  }, [isPlaying, currentSong, volume, muted]);
+
+  function onPlaying() {
+    const duration = audioElem.current.duration;
+    const ct = audioElem.current.currentTime;
+
+    setCurrentSong({...currentSong, 'progress': ct / duration * 100, 'length': duration});
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <audio src={currentSong.url} ref={audioElem} onTimeUpdate={onPlaying}/>
+      <div className="songs-list">
+        {songsData.map((el) => (
+          <h2>{el.title} {el.duration}</h2>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <Player
+        songs={songs}
+        setSongs={setSongs}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        audioElem={audioElem}
+        currentSong={currentSong}
+        setCurrentSong={setCurrentSong}
+        muted={muted}
+        mute={mute}
+        unMute={unMute}
+        setVolume={setVolume}
+        volume={volume}
+      />
+    </div>
+  );
+
 }
 
 export default App
