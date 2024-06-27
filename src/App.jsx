@@ -77,9 +77,7 @@ function App() {
         <img src="media/on_platform_logo_dark.svg" alt=""/>
         <img className="acc-logo" src="media/acc_logo.jpg" alt=""/>
       </nav>
-      <div className="main" onKeyPress={() => {
-        console.log(1111)
-      }}>
+      <div className="main">
         <SideBar img={'media/sidebar_image.png'}/>
 
         <div className="main-queue">
@@ -88,7 +86,7 @@ function App() {
               <h4>PLAYLIST</h4>
             </div>
             <div className="queue-head-2">
-              <h4>LYRICS</h4>
+              <h4>UPLOAD</h4>
             </div>
           </div>
           <div className="lyrics-text d-none">
