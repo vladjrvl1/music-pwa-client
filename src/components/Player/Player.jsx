@@ -1,29 +1,28 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import '../../styles/player.scss';
-import {
-  BsFillPauseCircleFill,
-  BsFillPlayCircleFill,
-  BsFillSkipEndCircleFill,
-  BsFillSkipStartCircleFill,
-  BsFillVolumeMuteFill,
-  BsFillVolumeUpFill,
-} from 'react-icons/bs';
-import VolumeControl from './VolumeControl.jsx';
-import SlideBar from './SlideBar.jsx';
+import Volume from './VolumeBar.jsx';
+import PlayerControl from './Control.jsx';
+import ProgressSlider from './ProgressSlider.jsx';
 
-export default function Player({
-                                 audioElem,
-                                 isPlaying,
-                                 setIsPlaying,
-                                 currentSong,
-                                 setCurrentSong,
-                                 songs,
-                                 muted,
-                                 mute,
-                                 unMute,
-                                 setVolume,
-                                 volume,
-                               }) {
+export default function Player(
+  {audioElem, songs, currentSong, setCurrentSong, audioProgress, setAudioProgress, isPlaying, setIsPlaying}
+) {
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
+
+  function mute() {
+    setMuted(true);
+  }
+
+  function unMute() {
+    setMuted(false);
+  }
+
+  useEffect(() => {
+    audioElem.current.volume = volume;
+    audioElem.current.muted = muted;
+  }, [volume, muted]);
+
 
   function play() {
     setIsPlaying(true);
@@ -36,9 +35,9 @@ export default function Player({
   function playPrevious() {
     const index = songs.findIndex(x => x.title === currentSong.title);
     if (index === 0) {
-      setCurrentSong(songs[songs.length - 1])
+      setCurrentSong(songs[songs.length - 1]);
     } else {
-      setCurrentSong(songs[index - 1])
+      setCurrentSong(songs[index - 1]);
     }
     audioElem.current.currentTime = 0;
   }
@@ -46,36 +45,52 @@ export default function Player({
   function playNext() {
     const index = songs.findIndex(x => x.title === currentSong.title);
     if (index === songs.length - 1) {
-      setCurrentSong(songs[0])
+      setCurrentSong(songs[0]);
     } else {
-      setCurrentSong(songs[index + 1])
+      setCurrentSong(songs[index + 1]);
     }
     audioElem.current.currentTime = 0;
   }
 
+  function progressChange(e) {
+    const progress = e.currentTarget.value;
+    audioElem.current.currentTime = (progress / 100) * audioElem.current.duration;
+    setAudioProgress(e.currentTarget.value);
+  }
+
+  function volumeChange(e) {
+    const newVolume = e.target.value;
+    setVolume(newVolume);
+  }
+
   return (
-    <div className="player_container">
-      <div className="title">
-        <p>{currentSong.title}</p>
+    <div className="playback-bar">
+      <ProgressSlider
+        audioProgress={audioProgress}
+        onProgressChange={progressChange}
+      />
+
+      <div className="left-playback">
+        <img src={currentSong.image} alt=""/>
+        <div className="playback-info">
+          <h5 className="playback-head">{currentSong.title}</h5>
+          <p className="playback-artist">{currentSong.artist}</p>
+        </div>
       </div>
-      <SlideBar audioElem={audioElem} currentSong={currentSong}/>
-      <div className="controls">
-        {muted
-          ? <BsFillVolumeMuteFill className="btn_action" onClick={unMute}/>
-          : <BsFillVolumeUpFill className="btn_action" onClick={mute}/>
-        }
-        <VolumeControl
-          volume={volume}
-          setVolume={setVolume}
-        />
-        <div className="volume-bar"></div>
-        <BsFillSkipStartCircleFill className="btn_action" onClick={playPrevious}/>
-        {isPlaying
-          ? <BsFillPauseCircleFill className="btn_action pp" onClick={pause}/>
-          : <BsFillPlayCircleFill className="btn_action pp" onClick={play}/>
-        }
-        <BsFillSkipEndCircleFill className="btn_action" onClick={playNext}/>
-      </div>
+      <PlayerControl
+        playPrevious={playPrevious}
+        play={play}
+        playNext={playNext}
+        pause={pause}
+        isPlaying={isPlaying}
+      />
+      <Volume
+        volume={volume}
+        onVolumeChange={volumeChange}
+        muted={muted}
+        mute={mute}
+        unMute={unMute}
+      />
     </div>
   )
 }
