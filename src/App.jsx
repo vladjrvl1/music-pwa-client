@@ -1,8 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Link, Navigate, Route, Routes, useLocation} from 'react-router-dom';
-import './App.css'
 
-import './index.scss';
 import SideBar from './components/Player/SideBar.jsx';
 import Player from './components/Player/Player.jsx';
 import Playlist from './components/Player/PlayList.jsx';
@@ -22,7 +20,7 @@ function App() {
     if (location.pathname === '/playlist') {
       getSongs(setSongs);
     }
-  }, [location]);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (canPlayThrough) {

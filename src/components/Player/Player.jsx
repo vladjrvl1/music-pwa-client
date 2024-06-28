@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import '../../styles/player.scss';
 import Volume from './VolumeBar.jsx';
 import PlayerControl from './Control.jsx';
 import ProgressSlider from './ProgressSlider.jsx';
 
 export default function Player(
-  {audioElem, songs, currentSong, setCurrentSong, audioProgress, setAudioProgress, isPlaying, setIsPlaying}
+  {audioElem, songs, currentSong, setCurrentSong, audioProgress, setAudioProgress, isPlaying, setIsPlaying, handleSeek}
 ) {
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);

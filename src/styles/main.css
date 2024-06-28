@@ -229,13 +229,13 @@ nav .acc-logo {
   z-index: 100;
   background: #212121;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem;
   transition: 500ms ease-out;
 }
 .playback-bar .controls {
-  margin: auto;
+  width: 10%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -246,15 +246,16 @@ nav .acc-logo {
   margin: 8px;
 }
 .playback-bar .left-playback {
+  width: 40%;
   display: flex;
   float: left;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
 }
 .playback-bar .left-playback img {
   width: 3rem;
   height: 3rem;
-  margin: 0 1rem 0 0;
+  margin: 5px 1rem 0 0;
 }
 .playback-bar .left-playback .playback-info {
   display: flex;
@@ -320,7 +321,9 @@ nav .acc-logo {
 }
 
 .volume {
+  width: 40%;
   display: flex;
+  justify-content: right;
   align-items: center; /* Align items center vertically */
 }
 .volume .vol-up,
@@ -374,8 +377,8 @@ nav .acc-logo {
     height: 100vh;
   }
   .playback-bar {
-    padding-right: 2rem;
+    padding-right: 1rem;
   }
 }
 
-/*# sourceMappingURL=index.css.map */
+/*# sourceMappingURL=main.css.map */

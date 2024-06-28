@@ -262,13 +262,13 @@ nav {
   z-index: 100;
   background: #212121;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem;
   transition: 500ms ease-out;
 
   .controls {
-    margin: auto;
+    width: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -281,15 +281,16 @@ nav {
   }
 
   .left-playback {
+    width: 40%;
     display: flex;
     float: left;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
 
     img {
       width: 3rem;
       height: 3rem;
-      margin: 0 1rem 0 0;
+      margin: 5px 1rem 0 0;
     }
 
     .playback-info {
@@ -361,7 +362,9 @@ nav {
 }
 
   .volume {
+    width: 40%;
     display: flex;
+    justify-content: right;
     align-items: center; /* Align items center vertically */
 
     .vol-up,
@@ -421,7 +424,7 @@ nav {
     height: 100vh;
   }
   .playback-bar {
-    padding-right: 2rem;
+    padding-right: 1rem;
   }
 
 
