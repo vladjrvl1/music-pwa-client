@@ -71,7 +71,7 @@ export default function Player(
       />
 
       <div className="left-playback">
-        <img src={currentSong.image} alt=""/>
+        <img src={currentSong.imageUrl} alt=""/>
         <div className="playback-info">
           <h5 className="playback-head">{currentSong.title}</h5>
           <p className="playback-artist">{currentSong.artist}</p>

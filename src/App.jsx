@@ -1,35 +1,28 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {Link, Navigate, Route, Routes, useLocation} from 'react-router-dom';
 import './App.css'
-import songsData from './components/Player/audios.js';
 
 import './index.scss';
 import SideBar from './components/Player/SideBar.jsx';
 import Player from './components/Player/Player.jsx';
+import Playlist from './components/Player/PlayList.jsx';
+import UploadSong from './components/Player/UploadSong.jsx';
+import {fetchSongs} from './api/songs.js';
 
 function App() {
-  const [songs, setSongs] = useState(songsData);
+  const [songs, setSongs] = useState([]);
   const [currentSong, setCurrentSong] = useState(null);
   const [audioProgress, setAudioProgress] = useState(0);
   const [canPlayThrough, setCanPlayThrough] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioElem = useRef();
+  const location = useLocation();
 
   useEffect(() => {
-    function handleKeyDown(event) {
-      switch (event.code) {
-        case 'Space':
-          event.preventDefault();
-          setIsPlaying(prev => !prev);
-          break;
-      }
+    if (location.pathname === '/playlist') {
+      getSongs(setSongs);
     }
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-
+  }, [location]);
 
   useEffect(() => {
     if (canPlayThrough) {
@@ -46,7 +39,24 @@ function App() {
       audioElem.current.play();
       audioElem.current.currentTime = 0;
     }
-  }, [currentSong]);
+  }, [canPlayThrough, currentSong]);
+
+  useEffect(() => {
+    function handleKeyDown(event) {
+      switch (event.code) {
+        case 'Space':
+          if (event.target.tagName !== 'INPUT') {
+            event.preventDefault();
+            setIsPlaying(prev => !prev);
+            break;
+          }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   function onPlaying() {
     if (audioElem.current && audioElem.current.duration > 0) {
@@ -56,13 +66,22 @@ function App() {
     }
   }
 
-  function fetchSongs() {
-    // ToDo: implement and remove songs from state
+  async function getSongs() {
+    try {
+      const result = await fetchSongs();
+      setSongs(Array.isArray(result.data.songs) ? result.data.songs : []);
+    } catch (error) {
+      console.log('Failed to fetch songs.')
+    }
   }
 
   function chooseCurrentSong(song) {
-    setCurrentSong(song);
-    setIsPlaying(true);
+    if (song === currentSong) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setCurrentSong(song);
+      setIsPlaying(true);
+    }
   }
 
   function onEnded() {
@@ -78,41 +97,31 @@ function App() {
         <img className="acc-logo" src="media/acc_logo.jpg" alt=""/>
       </nav>
       <div className="main">
-        <SideBar img={'media/sidebar_image.png'}/>
+        <SideBar img={currentSong ? currentSong.imageUrl : 'media/sidebar_image.png'}/>
 
         <div className="main-queue">
           <div className="main-queue-head">
-            <div className="queue-head-1 active">
-              <h4>PLAYLIST</h4>
+            <div>
+              <Link to="/playlist" className={`queue-head-1${location.pathname === '/playlist' ? ' active' : ''}`}>
+                PLAYLIST
+              </Link>
             </div>
-            <div className="queue-head-2">
-              <h4>UPLOAD</h4>
+            <div>
+              <Link to="/upload" className={`queue-head-2${location.pathname === '/upload' ? ' active' : ''}`}>
+                UPLOAD
+              </Link>
             </div>
           </div>
-          <div className="lyrics-text d-none">
-            <p>Lyrics Section Coming Soon....</p>
-            <p>Keep supporting and we will add much more features in this app.</p>
-            <p className="last-para">Please if u like this project give it a star on github.</p>
-            <button><a href="https://github.com/alpha2207/yt-music-clone">Star this project on github.</a></button>
-          </div>
-          <div className="main-queue-playlist d-flex">
-            <ul>
-              {songsData.map((song) => (
-                <li key={song.title} onClick={() => chooseCurrentSong(song)}>
-                  <img src={song.image} alt=""/>
-                  <div className="playlist-text">
-                    <h5>{song.title}</h5>
-                    <p>{song.title}</p>
-                  </div>
-                  <p className="time">{song.duration}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
+          <Routes>
+            <Route path="/" element={<Navigate to="/playlist"/>}/>
+            <Route path="/playlist"
+                   element={<Playlist songs={songs} currentSong={currentSong} chooseCurrentSong={chooseCurrentSong}/>}
+            />
+            <Route path="/upload" element={<UploadSong/>}/>
+          </Routes>
         </div>
         <audio
-          src={currentSong ? currentSong.url : ''}
+          src={currentSong ? currentSong.audioUrl : ''}
           ref={audioElem}
           onTimeUpdate={onPlaying}
           onCanPlayThrough={() => setCanPlayThrough(true)}
